@@ -1,0 +1,28 @@
+﻿@page
+@model List<RskAnalysis.WEB.Models.CitiesW>
+<h2>Risk Items</h2>
+<a asp-action="Create">Create New Risk Item</a>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Sehir Adi</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CityId</td>
+            <td>@item.CityName</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.CityId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.CityId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.CityId">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
