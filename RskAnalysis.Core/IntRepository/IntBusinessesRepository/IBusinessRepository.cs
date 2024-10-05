@@ -9,7 +9,7 @@ namespace RskAnalysis.CORE.IntRepository.IntBusinessesRepository
 {
     public interface IBusinessesRepository : IRepository<Businesses>
     {
-        Task<List<Businesses>> GetBussinessWithSectors();
+        Task<IEnumerable<Businesses>> GetBussinessWithSectors();
         Task<List<Businesses>> GetBussinessByIdWithSectors(int id);
     }
 }

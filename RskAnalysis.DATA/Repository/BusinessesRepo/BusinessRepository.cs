@@ -27,10 +27,11 @@ namespace RskAnalysis.DATA.Repository.BusinessesRepo
             return businesses;
         }
 
-        public async Task<List<Businesses>> GetBussinessWithSectors()
+        public async Task<IEnumerable<Businesses>> GetBussinessWithSectors()
         {
             var businesses = await _db.Businesses
-                .Include(b => b.Sector).ToListAsync() ;
+                .Include(b => b.Sector)
+                .ToListAsync() ;
 
             return businesses;
 

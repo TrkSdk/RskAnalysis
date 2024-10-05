@@ -26,31 +26,36 @@ namespace RskAnalysis.DATA.Migrations
                 {
                     b.Property<int>("BusinessId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "businessId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessId"));
 
                     b.Property<string>("BusinessDescription")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "businessDescription");
 
                     b.Property<string>("BusinessName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "businessName");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasAnnotation("Relational:JsonPropertyName", "createdDate");
 
                     b.Property<int>("RiskFactor")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "riskFactor");
 
                     b.Property<int>("SectorId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "sectorId");
 
                     b.HasKey("BusinessId");
 
-                    b.HasIndex("SectorId")
-                        .IsUnique();
+                    b.HasIndex("SectorId");
 
                     b.ToTable("Businesses");
                 });
@@ -83,9 +88,6 @@ namespace RskAnalysis.DATA.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("BusinessId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ContractName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -96,10 +98,13 @@ namespace RskAnalysis.DATA.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsRejected")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PartnerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RiskId")
+                    b.Property<int>("RiskFactor")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -107,11 +112,7 @@ namespace RskAnalysis.DATA.Migrations
 
                     b.HasKey("ContractId");
 
-                    b.HasIndex("BusinessId");
-
                     b.HasIndex("PartnerId");
-
-                    b.HasIndex("RiskId");
 
                     b.ToTable("Contracts");
                 });
@@ -123,6 +124,9 @@ namespace RskAnalysis.DATA.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PartnerId"));
+
+                    b.Property<int>("BusinessId")
+                        .HasColumnType("int");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
@@ -145,35 +149,13 @@ namespace RskAnalysis.DATA.Migrations
                     b.Property<int>("RiskFactor")
                         .HasColumnType("int");
 
-                    b.Property<int>("SectorId")
-                        .HasColumnType("int");
-
                     b.HasKey("PartnerId");
+
+                    b.HasIndex("BusinessId");
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("SectorId");
-
                     b.ToTable("Partners");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Risks", b =>
-                {
-                    b.Property<int>("RiskId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RiskId"));
-
-                    b.Property<int>("RiskEstimationSuccess")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RiskScore")
-                        .HasColumnType("int");
-
-                    b.HasKey("RiskId");
-
-                    b.ToTable("Risks");
                 });
 
             modelBuilder.Entity("RskAnalysis.CORE.Models.Sectors", b =>
@@ -203,8 +185,8 @@ namespace RskAnalysis.DATA.Migrations
             modelBuilder.Entity("RskAnalysis.CORE.Models.Businesses", b =>
                 {
                     b.HasOne("RskAnalysis.CORE.Models.Sectors", "Sector")
-                        .WithOne("Business")
-                        .HasForeignKey("RskAnalysis.CORE.Models.Businesses", "SectorId")
+                        .WithMany()
+                        .HasForeignKey("SectorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -213,74 +195,32 @@ namespace RskAnalysis.DATA.Migrations
 
             modelBuilder.Entity("RskAnalysis.CORE.Models.Contracts", b =>
                 {
+                    b.HasOne("RskAnalysis.CORE.Models.Partners", "Partner")
+                        .WithMany()
+                        .HasForeignKey("PartnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Partner");
+                });
+
+            modelBuilder.Entity("RskAnalysis.CORE.Models.Partners", b =>
+                {
                     b.HasOne("RskAnalysis.CORE.Models.Businesses", "Business")
-                        .WithMany("ContractsList")
+                        .WithMany()
                         .HasForeignKey("BusinessId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RskAnalysis.CORE.Models.Partners", "Partner")
-                        .WithMany("ContractsList")
-                        .HasForeignKey("PartnerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("RskAnalysis.CORE.Models.Risks", "Risk")
-                        .WithMany("ContractsList")
-                        .HasForeignKey("RiskId")
+                    b.HasOne("RskAnalysis.CORE.Models.Cities", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Business");
 
-                    b.Navigation("Partner");
-
-                    b.Navigation("Risk");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Partners", b =>
-                {
-                    b.HasOne("RskAnalysis.CORE.Models.Cities", "City")
-                        .WithMany("PartnersList")
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RskAnalysis.CORE.Models.Sectors", "Sector")
-                        .WithMany()
-                        .HasForeignKey("SectorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("City");
-
-                    b.Navigation("Sector");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Businesses", b =>
-                {
-                    b.Navigation("ContractsList");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Cities", b =>
-                {
-                    b.Navigation("PartnersList");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Partners", b =>
-                {
-                    b.Navigation("ContractsList");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Risks", b =>
-                {
-                    b.Navigation("ContractsList");
-                });
-
-            modelBuilder.Entity("RskAnalysis.CORE.Models.Sectors", b =>
-                {
-                    b.Navigation("Business")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

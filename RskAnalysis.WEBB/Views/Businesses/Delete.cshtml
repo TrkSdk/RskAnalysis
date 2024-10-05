@@ -15,7 +15,7 @@
             @Html.DisplayNameFor(model => model.Sector)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sector.SectorDescription)
+            @Html.DisplayFor(model => model.Sector.SectorName)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.BusinessName)
@@ -45,6 +45,16 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="BusinessId" />
+        <input type="hidden" asp-for="SectorId" />
+        <input type="hidden" asp-for="BusinessName" />
+        <input type="hidden" asp-for="BusinessDescription" />
+        <input type="hidden" asp-for="RiskFactor" />
+        <input type="hidden" asp-for="CreatedDate" />
+        <input type="hidden" asp-for="Sector.SectorId" />
+        <input type="hidden" asp-for="Sector.SectorName" />
+        <input type="hidden" asp-for="Sector.SectorDescription" />
+        <input type="hidden" asp-for="Sector.CreatedDate" />
+        <input type="hidden" asp-for="Sector" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

@@ -33,14 +33,14 @@ namespace RskAnalysis.WEBB.Controllers
         }
 
         // GET: Sectors/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var res = await _sectorsWServices.GetSectorById((int)id);
+            var res = await _sectorsWServices.GetSectorById(id);
 
             if (res == null)
             {

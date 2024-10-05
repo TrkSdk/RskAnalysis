@@ -10,5 +10,16 @@ namespace RskAnalysis.SERVICE.Services.ContractsServ
         public ContractsService(IUnitOfWork unitOfWork, IRepository<Contracts> repo) : base(unitOfWork, repo)
         {
         }
+
+        public async Task<List<Contracts>> GetContractByIdWithPartners(int id)
+        {
+            return await _UnitOfWork.Contracts.GetContractByIdWithPartners(id);
+        }
+
+        public async Task<List<Contracts>> GetContractWithPartners()
+        {
+            return await _UnitOfWork.Contracts.GetContractWithPartners();
+        }
+
     }
 }

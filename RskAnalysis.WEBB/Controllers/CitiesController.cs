@@ -13,7 +13,7 @@ namespace RskAnalysis.WEBB.Controllers
 {
     public class CitiesController : Controller
     {
-        private readonly AppDbContext _context;
+        //private readonly AppDbContext _context;
         
         private readonly CitiesWServices _citiesWServices;
 
@@ -28,9 +28,6 @@ namespace RskAnalysis.WEBB.Controllers
             var res = await _citiesWServices.GetCitiesAsync() as IEnumerable<Cities>;
 
             return View(res);
-            //return _context.Cities != null ? 
-            //            View(await _context.Cities.ToListAsync()) :
-            //            Problem("Entity set 'AppDbContext.Cities'  is null.");
         }
 
         // GET: Cities/Details/5
@@ -71,7 +68,8 @@ namespace RskAnalysis.WEBB.Controllers
             //    return RedirectToAction(nameof(Index));
             //}
             var res = await _citiesWServices.AddCity(cities);
-            //return View(res);
+            cities = null;
+            
             return RedirectToAction("Index");
         }
 
@@ -103,22 +101,6 @@ namespace RskAnalysis.WEBB.Controllers
 
             if (ModelState.IsValid)
             {
-                //try
-                //{
-                //    _context.Update(cities);
-                //    await _context.SaveChangesAsync();
-                //}
-                //catch (DbUpdateConcurrencyException)
-                //{
-                //    if (!CitiesExists(cities.CityId))
-                //    {
-                //        return NotFound();
-                //    }
-                //    else
-                //    {
-                //        throw;
-                //    }
-                //}
                 var res = await _citiesWServices.UpdateCity(cities);
                 return RedirectToAction(nameof(Index));
             }
@@ -147,17 +129,10 @@ namespace RskAnalysis.WEBB.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed([Bind("CityId", "CityName")] Cities city)
         {
-
             _citiesWServices.DeleteCity(city);
-            
-            
             
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CitiesExists(int id)
-        {
-          return (_context.Cities?.Any(e => e.CityId == id)).GetValueOrDefault();
-        }
     }
 }

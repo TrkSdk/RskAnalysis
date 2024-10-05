@@ -1,33 +1,27 @@
-using RskAnalysis.API.Custom;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RskAnalysis.CORE.IntRepository;
 using RskAnalysis.CORE.IntServices;
 using RskAnalysis.CORE.IntServices.IntBusinessesServ;
 using RskAnalysis.CORE.IntServices.IntCitiesServ;
 using RskAnalysis.CORE.IntServices.IntContractsServ;
+using RskAnalysis.CORE.IntServices.IntRejectedContractsServ;
+using RskAnalysis.CORE.IntServices.IntPartnerRequestServ;
 using RskAnalysis.CORE.IntServices.IntPartnersServ;
-using RskAnalysis.CORE.IntServices.IntRisksServ;
 using RskAnalysis.CORE.IntServices.IntSectorsServ;
 using RskAnalysis.CORE.IntUnitOfWork;
 using RskAnalysis.DATA;
 using RskAnalysis.DATA.Repository;
 using RskAnalysis.DATA.UnitOfWork;
-using RskAnalysis.SERVICE.Services;
+
 using RskAnalysis.SERVICE.Services.BusinessesServ;
 using RskAnalysis.SERVICE.Services.CitiesServ;
 using RskAnalysis.SERVICE.Services.ContractsServ;
+using RskAnalysis.SERVICE.Services.RejectedContractsServ;
+using RskAnalysis.SERVICE.Services.PartnerRequestServ;
 using RskAnalysis.SERVICE.Services.PartnersServ;
-using RskAnalysis.SERVICE.Services.RisksServ;
 using RskAnalysis.SERVICE.Services.SectorsServ;
-using TimeSpanToStringConverter = RskAnalysis.API.Custom.TimeSpanToStringConverter;
 using System.Net;
-using RskAnalysis.CORE.IntRepository.IntBusinessesRepository;
-using RskAnalysis.CORE.IntRepository.IntCitiesRepository;
-using RskAnalysis.CORE.IntRepository.IntSectorsRepository;
-using RskAnalysis.DATA.Repository.CitiesRepo;
-using RskAnalysis.DATA.Repository.SectorsRepo;
-using RskAnalysis.DATA.Repository.BusinessesRepo;
+using TimeSpanToStringConverter = RskAnalysis.API.Custom.TimeSpanToStringConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,14 +37,16 @@ builder.Services.AddScoped(typeof(IService<>), typeof(RskAnalysis.SERVICE.Servic
 builder.Services.AddScoped<IBusinessesService, BusinessesService>();
 builder.Services.AddScoped<ICitiesService, CitiesService>();
 builder.Services.AddScoped<IContractsService, ContractsService>();
+builder.Services.AddScoped<IRejectedContractsService, RejectedContractsService>();
 builder.Services.AddScoped<IPartnersService, PartnersService>();
-builder.Services.AddScoped<IRisksService, RisksService>();
 builder.Services.AddScoped<ISectorsService, SectorsService>();
+builder.Services.AddScoped<IPartnerRequestService, PartnerRequestService>();
 
 
-builder.Services.AddScoped<ICitiesRepository, CitiesRepository>();
-builder.Services.AddScoped<IBusinessesRepository, BusinessRepository>();
-builder.Services.AddScoped<ISectorsRepository, SectorsRepository>();
+//builder.Services.AddTransient<ICitiesRepository, CitiesRepository>();
+//builder.Services.AddScoped<IBusinessesRepository, BusinessRepository>();
+//builder.Services.AddScoped<ISectorsRepository, SectorsRepository>();
+//builder.Services.AddScoped<IPartnersRepository, PartnersRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -61,7 +57,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConStr1").ToString(), sqlServerOptionsAction: o =>
         {
             o.EnableRetryOnFailure();
-            o.MigrationsAssembly("MetaBoxWMS.Data");
+            o.MigrationsAssembly("RskAnalysis.Data");
         });
     }
 
@@ -107,8 +103,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-
-
 
 app.UseAuthorization();
 

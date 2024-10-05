@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RskAnalysis.API.DTOs;
-using RskAnalysis.CORE.IntRepository.IntCitiesRepository;
-using RskAnalysis.CORE.IntRepository.IntContractsRepository;
 using RskAnalysis.CORE.Models;
 using RskAnalysis.DATA;
-using RskAnalysis.DATA.Repository.CitiesRepo;
-using System.Diagnostics.Contracts;
+using RskAnalysis.CORE.IntServices.IntContractsServ;
 
 namespace RskAnalysis.API.Controllers
 {
@@ -15,50 +11,77 @@ namespace RskAnalysis.API.Controllers
     [ApiController]
     public class ContractsController : ControllerBase
     {
-        private readonly IContractsRepository _contractsRepository;
-        private readonly AppDbContext _context;
+        private readonly IContractsService _contractsService;
         private readonly IMapper _mapper;
 
-        public ContractsController( IContractsRepository contractsRepository,AppDbContext context, IMapper mapper)
+        public ContractsController(IContractsService contractsService, AppDbContext context, IMapper mapper)
         {
-            _contractsRepository=contractsRepository;
-            _context=context;
+            _contractsService= contractsService;
             _mapper=mapper;
         }
 
         [HttpGet, Route("ContractsList")]
         public async Task<IActionResult> GetContractsList()
         {
-            var contrList = await _contractsRepository.GetAllAsync();
+            var contrList = await _contractsService.GetAllAsync();
+            contrList = contrList.Where(x => x.IsRejected == false);
+            
             return Ok(_mapper.Map<IEnumerable<ContractsDto>>(contrList));
         }
 
-        [HttpGet, Route("Contracts/{id}")]
-        public async Task<IActionResult> GetContractsById(int id)
+        [HttpGet, Route("ContractsWithPartner")]
+        public async Task<IActionResult> GetContractWithPartner()
         {
-            var contr = await _contractsRepository.GetByIdAsync(id);
+            var parList = await _contractsService.GetContractWithPartners();
+            return Ok(parList);
+        }
 
-            return Ok(_mapper.Map<IEnumerable<ContractsDto>>(contr));
+
+        [HttpGet, Route("ContractsID/{id}")]
+        public async Task<IActionResult> GetContractById(int id)
+        {
+            var cntrct = await _contractsService.GetByIdAsync(id);
+
+            return Ok(cntrct);
 
         }
 
-        [HttpPost, Route("AddContract/{Contract}")]
+        [HttpGet, Route("ContractsIDWithPartner/{id}")]
+        public async Task<IActionResult> GetContractByIdWithPartner(int id)
+        {
+            var cntrct = await _contractsService.GetContractByIdWithPartners(id);
+
+            return Ok(cntrct);
+
+        }
+
+        [HttpPost, Route("AddContracts/{Contract}")]
         public IActionResult ContractAdd(Contracts contract)
         {
-            //usrDto.Id = Guid.NewGuid();
-            var contr = _contractsRepository.AddAsync(contract);
+            contract.Partner = null;
+            contract.IsRejected= false;
+            var cntrct = _contractsService.AddAsync(contract);
 
-            return Ok(_mapper.Map<IEnumerable<ContractsDto>>(contr));
+            return Ok(cntrct);
 
         }
 
-        [HttpPut, Route("UpdateContract/{Contract}")]
-        public IActionResult BusinessesUpdate(Contracts contract)
+        [HttpPut, Route("UpdateContracts/{contractId}")]
+        public IActionResult ContractsUpdate(int contractId, [FromBody] Contracts contract)
         {
+            // Eğer ID'ler uyuşmazsa hata dönebiliriz
+            if (contractId != contract.ContractId)
+            {
+                return BadRequest("Contract ID uyusmadi.");
+            }
             //usrDto.Id = Guid.NewGuid();
-            var contr = _contractsRepository.Update(contract);
+            var bus = _contractsService.Update(contract);
+            if (bus == null)
+            {
+                return NotFound("Contract not found.");
+            }
 
-            return NoContent();
+            return Ok();
 
         }
 
@@ -68,24 +91,8 @@ namespace RskAnalysis.API.Controllers
             //usrDto.Id = Guid.NewGuid();
 
 
-            _contractsRepository.Remove(contract);
-            return NoContent();
-
-
-
-            //if (orDet.Result.Count()>0)
-            //{
-
-            //}
-            //else
-            //{
-            //    ErrorDto errorDto = new ErrorDto();
-            //    errorDto.Status = 404;//NotFound hata kodu.
-
-            //    errorDto.Errors.Add($" Guncellenecek kayit bulunamadi.");
-            //    return new NotFoundObjectResult(errorDto);
-            //}
-
+            _contractsService.Remove(contract);
+            return Ok();
         }
 
     }

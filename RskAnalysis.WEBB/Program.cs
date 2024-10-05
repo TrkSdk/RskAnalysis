@@ -1,15 +1,41 @@
+using RskAnalysis.CORE.IntRepository;
+using RskAnalysis.CORE.IntServices;
+using RskAnalysis.DATA.Repository;
 using RskAnalysis.WEBB.Services.BusinessesSer;
 using RskAnalysis.WEBB.Services.CitiesSer;
+using RskAnalysis.WEBB.Services.PartnerRiskSer;
+using RskAnalysis.WEBB.Services.PartnersSer;
 using RskAnalysis.WEBB.Services.SectorsSer;
+using RskAnalysis.WEBB.Services.ContractsSer;
+using RskAnalysis.WEBB.Services.RejectedContractsSer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IService<>), typeof(RskAnalysis.SERVICE.Service<>));
+
+//builder.Services.AddScoped<IBusinessesService, BusinessesService>();
+//builder.Services.AddTransient<ICitiesService, CitiesService>();
+//builder.Services.AddScoped<IContractsService, ContractsService>();
+//builder.Services.AddScoped<IPartnersService, PartnersService>();
+//builder.Services.AddScoped<IRisksService, RisksService>();
+//builder.Services.AddScoped<ISectorsService, SectorsService>();
+//builder.Services.AddScoped<IPartnerRequestService, PartnerRequestService>();
+
 builder.Services.AddHttpClient<CitiesWServices>();
 builder.Services.AddHttpClient<BusinessesWServices>();
 builder.Services.AddHttpClient<SectorsWServices>();
+builder.Services.AddHttpClient<PartnersWServices>();
+builder.Services.AddHttpClient<PartnerRequestWServices>();
+builder.Services.AddHttpClient<ContractsWServices>();
+builder.Services.AddHttpClient<RejectedContractsWServices>();
 
 var app = builder.Build();
 

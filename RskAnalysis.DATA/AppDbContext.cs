@@ -10,13 +10,17 @@ namespace RskAnalysis.DATA
         public DbSet<Contracts> Contracts { get; set; }
         public DbSet<Businesses> Businesses { get; set; }
         public DbSet<Cities> Cities { get; set; }
-        public DbSet<Risks> Risks { get; set; }
+        
+
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=(localDB)\\MSSQLLocalDB;Database=RiskAnalysis;Trusted_Connection=True;MultipleActiveResultSets=true");
+                //optionsBuilder.UseSqlServer("Server=(localDB)\\MSSQLLocalDB;Database=RiskAnalysis;Trusted_Connection=True;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=RiskAnalysis;Trusted_Connection=True;MultipleActiveResultSets=true");
+                
             }
         }
 
@@ -36,19 +40,20 @@ namespace RskAnalysis.DATA
             modelBuilder.Entity<Contracts>().HasKey(c => c.ContractId);
             modelBuilder.Entity<Sectors>().HasKey(c => c.SectorId);
             modelBuilder.Entity<Businesses>().HasKey(c => c.BusinessId);
-            modelBuilder.Entity<Risks>().HasKey(c => c.RiskId);
+            
+           
 
             // Business - Sector 1-1 relationship
-            modelBuilder.Entity<Businesses>()
-                .HasOne(b => b.Sector)
-                .WithOne(s => s.Business)
-                .HasForeignKey<Businesses>(b => b.SectorId);
+            //modelBuilder.Entity<Businesses>()
+            //    .HasOne(b => b.Sector)
+            //    .WithOne(s => s.Business)
+            //    .HasForeignKey<Businesses>(b => b.SectorId);
 
             // Contracts - Risk: Many-to-One relationship (N-1)   Not:1-1 olmayacak mı
-            modelBuilder.Entity<Contracts>()
-                .HasOne(c => c.Risk)  // Her Contract bir tane Risk'e sahiptir
-                .WithMany(r => r.ContractsList)  // Bir Risk birden fazla Contract ile ilişkilidir
-                .HasForeignKey(c => c.RiskId);
+            //modelBuilder.Entity<Contracts>()
+            //    .HasOne(c => c.Risk)  // Her Contract bir tane Risk'e sahiptir
+            //    .WithMany(r => r.ContractsList)  // Bir Risk birden fazla Contract ile ilişkilidir
+            //    .HasForeignKey(c => c.RiskId);
 
             //Business - Contracts: 1 - N relationship
             //modelBuilder.Entity<Businesses>()
@@ -57,11 +62,11 @@ namespace RskAnalysis.DATA
             //    .HasForeignKey(c => c.BusinessId);
 
             // Partners - Contracts: 1-N relationship
-            modelBuilder.Entity<Partners>()
-             .HasMany(p => p.ContractsList)
-             .WithOne(c => c.Partner)
-             .HasForeignKey(c => c.PartnerId)
-             .OnDelete(DeleteBehavior.NoAction);  // Cascade silme davranışını kaldırarak NoAction kullanıyoruz
+            //modelBuilder.Entity<Partners>()
+            // .HasMany(p => p.ContractsList)
+            // .WithOne(c => c.Partner)
+            // .HasForeignKey(c => c.PartnerId)
+            // .OnDelete(DeleteBehavior.NoAction);  // Cascade silme davranışını kaldırarak NoAction kullanıyoruz
 
 
 

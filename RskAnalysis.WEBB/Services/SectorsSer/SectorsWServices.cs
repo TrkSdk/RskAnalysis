@@ -46,12 +46,6 @@ namespace RskAnalysis.WEBB.Services.SectorsSer
 
         public void DeleteSector(Sectors sect)
         {
-            //var response = await _httpClient.DeleteAsync($"https://localhost:7009/api/Sectors/DeleteSectors/{sect}");
-            //response.EnsureSuccessStatusCode();
-            //var cty = await response.Content.ReadFromJsonAsync<Cities>();
-            //return cty;
-
-
 
             var request = new HttpRequestMessage(HttpMethod.Delete, $"https://localhost:7009/api/Sectors/DeleteSectors/{sect}")
             {
@@ -61,8 +55,6 @@ namespace RskAnalysis.WEBB.Services.SectorsSer
 
             var response = _httpClient.SendAsync(request).Result;
             response.EnsureSuccessStatusCode();
-            //var cty = await response.Content.ReadFromJsonAsync<Cities>();
-            //return cty;
         }
     }
 }

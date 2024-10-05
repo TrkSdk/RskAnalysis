@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using RskAnalysis.CORE.IntServices.IntBusinessesServ;
-using RskAnalysis.DATA;
-using System;
 using RskAnalysis.API.DTOs;
-using AutoMapper;
-using System.Security.Cryptography;
 using RskAnalysis.CORE.Models;
 
 namespace RskAnalysis.API.Controllers
@@ -15,13 +11,11 @@ namespace RskAnalysis.API.Controllers
     public class BusinessesController : ControllerBase
     {
         private readonly IBusinessesService _businessService;
-        private readonly AppDbContext _context;
         private readonly IMapper _mapper;
 
-        public BusinessesController(IBusinessesService businessService,AppDbContext context, IMapper mapper)
+        public BusinessesController(IBusinessesService businessService, IMapper mapper)
         {
             _businessService=businessService;
-            _context=context;
             _mapper=mapper;
         }
 
@@ -42,68 +36,56 @@ namespace RskAnalysis.API.Controllers
         [HttpGet, Route("BusinessesID/{id}")]
         public async Task<IActionResult> GetBusinessesById(int id)
         {
-            var busId = await _businessService.GetByIdAsync(id);
+            var buss = await _businessService.GetByIdAsync(id);
 
-            return Ok(busId);
+            return Ok(buss);
 
         }
 
         [HttpGet, Route("BusinessesIDWithSector/{id}")]
         public async Task<IActionResult> GetBusinessesByIdWithSector(int id)
         {
-            var busId = await _businessService.GetBussinessByIdWithSectors(id);
+            var bus = await _businessService.GetBussinessByIdWithSectors(id);
 
-            return Ok(busId);
+            return Ok(bus);
 
         }
 
         [HttpPost, Route("AddBusinesses/{business}")]
         public IActionResult BusinessesAdd(Businesses business)
         {
-            //usrDto.Id = Guid.NewGuid();
+            business.Sector = null;
             var bus = _businessService.AddAsync(business);
 
-            //return Ok(_mapper.Map<IEnumerable<BusinessesDto>>(bus));
-            return CreatedAtAction(nameof(GetBussinessesList), new { id = business.BusinessId }, business);
+            return Ok(bus);
         }
 
-        [HttpPut, Route("UpdateBusinesses/{business}")]
-        public IActionResult BusinessesUpdate(Businesses business)
+        [HttpPut, Route("UpdateBusinesses/{businesessId}")]
+        public IActionResult BusinessesUpdate(int businesessId,[FromBody]Businesses business)
         {
+            // Eğer ID'ler uyuşmazsa hata dönebiliriz
+            if (businesessId != business.BusinessId)
+            {
+                return BadRequest("Business ID uyusmadi.");
+            }
             //usrDto.Id = Guid.NewGuid();
             var bus = _businessService.Update(business);
+            if (bus == null)
+            {
+                return NotFound("Business not found.");
+            }
 
-            return NoContent();
+            return Ok();
 
         }
 
-        [HttpDelete, Route("DeleteBusinesses/{business}")]
-        public IActionResult BusinessesDelete(Businesses business)
+        [HttpDelete, Route("DeleteBusiness/{Business}")]
+        public IActionResult BusinessDelete(Businesses business)
         {
-            //usrDto.Id = Guid.NewGuid();
 
-            if (ModelState.IsValid)
-            {
                 _businessService.Remove(business);
-                return NoContent();
-            }
+                return Ok();
             
-            return NoContent();
-
-
-            //if (orDet.Result.Count()>0)
-            //{
-
-            //}
-            //else
-            //{
-            //    ErrorDto errorDto = new ErrorDto();
-            //    errorDto.Status = 404;//NotFound hata kodu.
-
-            //    errorDto.Errors.Add($" Guncellenecek kayit bulunamadi.");
-            //    return new NotFoundObjectResult(errorDto);
-            //}
-
         }
 
     }

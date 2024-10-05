@@ -21,8 +21,8 @@ namespace RskAnalysis.API.Mapping
             CreateMap<Partners, PartnersDto>();
             CreateMap<PartnersDto, Partners>();
 
-            CreateMap<Risks, RisksDto>();
-            CreateMap<RisksDto, Risks>();
+            CreateMap<PartnerRequest, PartnerRequestDto>();
+            CreateMap<PartnerRequestDto, PartnerRequest>();
 
             CreateMap<Sectors, SectorsDto>();
             CreateMap<SectorsDto, Sectors>();

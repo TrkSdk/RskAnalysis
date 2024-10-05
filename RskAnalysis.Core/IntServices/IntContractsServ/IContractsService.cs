@@ -10,5 +10,8 @@ namespace RskAnalysis.CORE.IntServices.IntContractsServ
 {
     public interface IContractsService : IService<Contracts>
     {
+        Task<List<Contracts>> GetContractWithPartners();
+        Task<List<Contracts>> GetContractByIdWithPartners(int id);
+
     }
 }

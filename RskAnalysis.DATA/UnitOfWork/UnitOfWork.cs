@@ -1,17 +1,23 @@
-﻿using Microsoft.Extensions.Configuration;
-using RskAnalysis.CORE.IntRepository.IntBusinessesRepository;
+﻿using RskAnalysis.CORE.IntRepository.IntBusinessesRepository;
 using RskAnalysis.CORE.IntRepository.IntCitiesRepository;
 using RskAnalysis.CORE.IntRepository.IntContractsRepository;
+using RskAnalysis.CORE.IntRepository.IntRejectedContractsRepository;
+using RskAnalysis.CORE.IntRepository.IntPartnerRequestRepository;
 using RskAnalysis.CORE.IntRepository.IntPartnersRepository;
-using RskAnalysis.CORE.IntRepository.IntRisksRepository;
+using RskAnalysis.CORE.IntRepository.IntRejectedContractsRepository;
 using RskAnalysis.CORE.IntRepository.IntSectorsRepository;
+
 using RskAnalysis.CORE.IntUnitOfWork;
+
 using RskAnalysis.DATA.Repository.BusinessesRepo;
 using RskAnalysis.DATA.Repository.CitiesRepo;
 using RskAnalysis.DATA.Repository.ContractsRepo;
+using RskAnalysis.DATA.Repository.RejectedContractsRepo;
+using RskAnalysis.DATA.Repository.PartnerRequestRepo;
 using RskAnalysis.DATA.Repository.PartnersRepo;
-using RskAnalysis.DATA.Repository.RisksRepo;
+using RskAnalysis.DATA.Repository.RejectedContractsRepo;
 using RskAnalysis.DATA.Repository.SectorsRepo;
+using System.Net.Http;
 
 namespace RskAnalysis.DATA.UnitOfWork
 {
@@ -23,11 +29,13 @@ namespace RskAnalysis.DATA.UnitOfWork
         private CitiesRepository _citiesRepository;        
         private ContractsRepository _contractsRepository;        
         private PartnersRepository _partnersRepository;        
-        private RisksRepository _risksRepository;
-        private SectorsRepository _sectorsRepository;
-       
-        //private IConfiguration _config;
+        private PartnerRequestRepository _partnerRequestRepository;       
         
+        private SectorsRepository _sectorsRepository;
+        private RejectedContractsRepository _rejectedContractsRepository;
+
+        //private IConfiguration _config;
+
 
         public UnitOfWork(AppDbContext db/*,IConfiguration config*/)
         {
@@ -46,12 +54,16 @@ namespace RskAnalysis.DATA.UnitOfWork
 
         public IPartnersRepository Partners => _partnersRepository ??= new
             PartnersRepository(_db);
+        
+        public IPartnerRequestRepository PartnerRequest => _partnerRequestRepository ??= new
+            PartnerRequestRepository(_db, _contractsRepository, _rejectedContractsRepository);
 
-        public IRisksRepository Risks => _risksRepository ??= new
-            RisksRepository(_db);
+        
 
         public ISectorsRepository Sectors => _sectorsRepository ??= new
             SectorsRepository(_db);
+        public IRejectedContractsRepository RejectedContracts => _rejectedContractsRepository ??= new
+            RejectedContractsRepository(_db);
 
         public void Commit()
         {

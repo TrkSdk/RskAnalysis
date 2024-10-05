@@ -1,14 +1,13 @@
 ﻿using RskAnalysis.CORE.Models;
 using System.Text;
 //using Newtonsoft.Json;
-using NuGet.Protocol;
 using System.Text.Json;
 
 namespace RskAnalysis.WEBB.Services.CitiesSer
 {
     public class CitiesWServices
     {
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         public CitiesWServices(HttpClient httpClient)
         {
@@ -26,7 +25,9 @@ namespace RskAnalysis.WEBB.Services.CitiesSer
         {
             var response = await _httpClient.GetAsync($"https://localhost:7009/api/Cities/Cities/{id}");
             response.EnsureSuccessStatusCode();
+            
             var cty = await response.Content.ReadFromJsonAsync<Cities>();
+            
             return cty;
         }
 
@@ -48,13 +49,6 @@ namespace RskAnalysis.WEBB.Services.CitiesSer
 
         public void DeleteCity(Cities city)
         {
-            //var response = await _httpClient.DeleteAsync($"https://localhost:7009/api/Cities/DeleteCity/{city}");
-            //response.EnsureSuccessStatusCode();
-            //var cty = await response.Content.ReadFromJsonAsync<Cities>();
-            //return cty;
-
-
-
             var request = new HttpRequestMessage(HttpMethod.Delete, $"https://localhost:7009/api/Cities/DeleteCity/{city}")
             {
                 Content = new StringContent(JsonSerializer.Serialize(city), Encoding.UTF8, "application/json")
@@ -63,8 +57,6 @@ namespace RskAnalysis.WEBB.Services.CitiesSer
 
             var response = _httpClient.SendAsync(request).Result;
             response.EnsureSuccessStatusCode();
-            //var cty = await response.Content.ReadFromJsonAsync<Cities>();
-            //return cty;
         }
     }
 }

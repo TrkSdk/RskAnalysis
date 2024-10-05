@@ -1,11 +1,6 @@
-﻿using RskAnalysis.CORE.IntRepository.IntCitiesRepository;
-using RskAnalysis.CORE.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RskAnalysis.CORE.Models;
 using RskAnalysis.CORE.IntRepository.IntContractsRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace RskAnalysis.DATA.Repository.ContractsRepo
 {
@@ -14,5 +9,28 @@ namespace RskAnalysis.DATA.Repository.ContractsRepo
         public ContractsRepository(AppDbContext db) : base(db)
         {
         }
+
+        public async Task<List<Contracts>> GetContractByIdWithPartners(int id)
+        {
+            var contracts = await _db.Contracts
+                .Include(b => b.Partner)
+                .Where(x => x.ContractId == id)
+                .Where(y => y.IsRejected == false)
+                .ToListAsync();
+
+            return contracts;
+        }
+
+        public async Task<List<Contracts>> GetContractWithPartners()
+        {
+            var contracts = await _db.Contracts
+                .Include(b => b.Partner)
+                .Where(y => y.IsRejected == false)
+                .ToListAsync();
+
+            return contracts;
+
+        }
+
     }
 }

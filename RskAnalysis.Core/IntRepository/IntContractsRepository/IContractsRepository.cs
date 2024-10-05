@@ -9,5 +9,8 @@ namespace RskAnalysis.CORE.IntRepository.IntContractsRepository
 {
     public interface IContractsRepository : IRepository<Contracts>
     {
+        Task<List<Contracts>> GetContractWithPartners();
+        Task<List<Contracts>> GetContractByIdWithPartners(int id);
+
     }
 }
